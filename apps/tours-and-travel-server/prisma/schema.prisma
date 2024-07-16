@@ -1,0 +1,65 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UserProfile {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String?
+  email     String?
+  phone     String?
+  address   String?
+  bookings  Booking[]
+  wishlists Wishlist[]
+}
+
+model Wishlist {
+  id            String       @id @default(cuid())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  tour          Tour?        @relation(fields: [tourId], references: [id])
+  tourId        String?
+  userProfile   UserProfile? @relation(fields: [userProfileId], references: [id])
+  userProfileId String?
+}
+
+model Tour {
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  price       Float?
+  title       String?
+  description String?
+  location    String?
+  wishlists   Wishlist[]
+  bookings    Booking[]
+}
+
+model Booking {
+  id            String       @id @default(cuid())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  bookingDate   DateTime?
+  userProfile   UserProfile? @relation(fields: [userProfileId], references: [id])
+  userProfileId String?
+  tour          Tour?        @relation(fields: [tourId], references: [id])
+  tourId        String?
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  firstName String?
+  lastName  String?
+  username  String   @unique
+  email     String?  @unique
+  password  String
+  roles     Json
+}
